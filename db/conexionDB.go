@@ -3,7 +3,9 @@ package db
 import (
 	"context"
 	"log"
+	"os"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -11,13 +13,18 @@ import (
 /*MongoCN es el objeto de conexion a la DB */
 var MongoCN = ConectarDB()
 
-//Delete in deploy
-const dbURL string = "mongodb+srv://root:root@cluster0-jjbii.mongodb.net/merntask"
-
-var clientOptions = options.Client().ApplyURI(dbURL)
-
 /*ConectarDB funcion que se conecta a la base de datos */
 func ConectarDB() *mongo.Client {
+	loadEnv()
+
+	dbURL := os.Getenv("DATABASE_URL")
+
+	if dbURL == "" {
+		log.Fatal("Variable de entorno de la DB no encontrada")
+	}
+
+	var clientOptions = options.Client().ApplyURI(dbURL)
+
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 
 	if err != nil {
@@ -45,4 +52,12 @@ func CheckConnection() bool {
 	}
 
 	return true
+}
+
+func loadEnv() {
+	err := godotenv.Load()
+
+	if err != nil {
+		log.Fatal("Error loading ENV")
+	}
 }

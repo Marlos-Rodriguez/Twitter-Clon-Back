@@ -1,7 +1,6 @@
 package jwt
 
 import (
-	"log"
 	"os"
 	"time"
 
@@ -12,10 +11,6 @@ import (
 //GenerateJWT Genera el encriptado con JWT
 func GenerateJWT(t models.Usuario) (string, error) {
 	secrectENV := os.Getenv("SECRECT_KEY")
-
-	if secrectENV == "" {
-		log.Fatal("Error loading Secret key from ENV")
-	}
 
 	myPass := []byte(secrectENV)
 

@@ -1,9 +1,6 @@
 package db
 
 import (
-	"context"
-	"time"
-
 	"github.com/Marlos-Rodriguez/Twitter-Clon-Back/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -11,14 +8,16 @@ import (
 
 //ModifyProfile modifica el perfil en la DB
 func ModifyProfile(u models.Usuario, ID string) (bool, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
+	//Make Chanel for gorutine with Context & Collection mongo method
+	c := make(chan models.ContextModel)
 
-	db := MongoCN.Database("twitterclon")
-	col := db.Collection("users")
+	//Gorutine for Get Context & Collection mongo method
+	go CreateContext("users", c)
 
+	//Make a base register interface for modify user
 	registro := make(map[string]interface{})
 
+	//Verify all values of User and assign the existing ones
 	if len(u.Nombre) > 0 {
 		registro["nombre"] = u.Nombre
 	}
@@ -48,19 +47,27 @@ func ModifyProfile(u models.Usuario, ID string) (bool, error) {
 		registro["sitioWeb"] = u.SitioWeb
 	}
 
+	//Convert to bson native
 	updtString := bson.M{
 		"$set": registro,
 	}
 
+	//Converte ID to Object ID
 	objID, _ := primitive.ObjectIDFromHex(ID)
 
+	//Create filter for the DB
 	filtro := bson.M{"_id": bson.M{"$eq": objID}}
 
-	_, err := col.UpdateOne(ctx, filtro, updtString)
+	cntxt := <-c
+
+	//Update the user if is found
+	_, err := cntxt.Col.UpdateOne(cntxt.Ctx, filtro, updtString)
 
 	if err != nil {
 		return false, err
 	}
+
+	cntxt.Cancel()
 
 	return true, nil
 }

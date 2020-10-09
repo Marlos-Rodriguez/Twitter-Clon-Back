@@ -12,12 +12,15 @@ import (
 
 //SearchUser busca datos de un usuario en la DB
 func SearchUser(ID string) (models.Usuario, error) {
+	//Create the context for the DB
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
+	//select the collection of database
 	db := MongoCN.Database("twitterclon")
 	col := db.Collection("users")
 
+	//Create base model User
 	var perfil models.Usuario
 
 	objID, _ := primitive.ObjectIDFromHex(ID)
@@ -26,8 +29,10 @@ func SearchUser(ID string) (models.Usuario, error) {
 		"_id": objID,
 	}
 
+	//Find a user in the DB
 	err := col.FindOne(ctx, condition).Decode(&perfil)
 
+	//Make empty the password
 	perfil.Password = ""
 
 	if err != nil {

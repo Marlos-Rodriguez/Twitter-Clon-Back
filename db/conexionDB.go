@@ -15,16 +15,20 @@ var MongoCN = ConectarDB()
 
 /*ConectarDB funcion que se conecta a la base de datos */
 func ConectarDB() *mongo.Client {
+	//Funtion to load ENV
 	loadEnv()
 
+	//Get MongoDB URL
 	dbURL := os.Getenv("DATABASE_URL")
 
 	if dbURL == "" {
 		log.Fatal("Variable de entorno de la DB no encontrada")
 	}
 
+	//Options for MongoDB with MongoDB Url
 	var clientOptions = options.Client().ApplyURI(dbURL)
 
+	//Conenct with the database
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 
 	if err != nil {
@@ -32,6 +36,7 @@ func ConectarDB() *mongo.Client {
 		return client
 	}
 
+	//Verify the connection with a ping
 	err = client.Ping(context.TODO(), nil)
 
 	if err != nil {
@@ -45,6 +50,7 @@ func ConectarDB() *mongo.Client {
 
 /*CheckConnection es el ping a la DB */
 func CheckConnection() bool {
+	//Verify the connection with a ping
 	err := MongoCN.Ping(context.TODO(), nil)
 
 	if err != nil {
@@ -54,6 +60,7 @@ func CheckConnection() bool {
 	return true
 }
 
+//Load the ENV
 func loadEnv() {
 	err := godotenv.Load()
 

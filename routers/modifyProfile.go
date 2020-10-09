@@ -10,8 +10,10 @@ import (
 
 //ModifyProfile modifica el perfil de usuario
 func ModifyProfile(w http.ResponseWriter, r *http.Request) {
+	//Create a base User Model
 	var t models.Usuario
 
+	//Decode the body
 	err := json.NewDecoder(r.Body).Decode(&t)
 
 	if err != nil {
@@ -21,6 +23,7 @@ func ModifyProfile(w http.ResponseWriter, r *http.Request) {
 
 	var status bool
 
+	//Try to modify the profile in DB
 	status, err = db.ModifyProfile(t, IDUsuario)
 
 	if err != nil {
@@ -33,5 +36,6 @@ func ModifyProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//Return a 200 code if everything is fine
 	w.WriteHeader(http.StatusCreated)
 }

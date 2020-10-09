@@ -14,12 +14,17 @@ import (
 
 //Handlers seteo mi puerto, el handler y empiezo el servidor
 func Handlers() {
+	//Crear Router
 	router := mux.NewRouter()
 
-	router.HandleFunc("/registro", middlewares.ChequeoDB(routers.Registro)).Methods("POST")
-	router.HandleFunc("/login", middlewares.ChequeoDB(routers.Login)).Methods("POST")
-	router.HandleFunc("/verPerfil", middlewares.ChequeoDB(middlewares.ValidJWT(routers.LookProfile))).Methods("GET")
-	router.HandleFunc("/modificarPerfil", middlewares.ChequeoDB(middlewares.ValidJWT(routers.ModifyProfile))).Methods("PUT")
+	//Route of Register
+	go router.HandleFunc("/registro", middlewares.ChequeoDB(routers.Registro)).Methods("POST")
+	//Route of Login
+	go router.HandleFunc("/login", middlewares.ChequeoDB(routers.Login)).Methods("POST")
+	//Route for See info profile
+	go router.HandleFunc("/verPerfil", middlewares.ChequeoDB(middlewares.ValidJWT(routers.LookProfile))).Methods("GET")
+	//Route for Modify Profile Info
+	go router.HandleFunc("/modificarPerfil", middlewares.ChequeoDB(middlewares.ValidJWT(routers.ModifyProfile))).Methods("PUT")
 
 	PORT := os.Getenv("PORT")
 

@@ -10,9 +10,13 @@ import (
 
 //Registro funcion para crear nuevo usuario en DB
 func Registro(w http.ResponseWriter, r *http.Request) {
+	//Create a base User model
 	var t models.Usuario
 
+	//Decode the body
 	err := json.NewDecoder(r.Body).Decode(&t)
+
+	//Verify if the info is correct
 
 	if err != nil {
 		http.Error(w, "Error en los datos recibidos"+err.Error(), 400)
@@ -28,6 +32,7 @@ func Registro(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//Search if the user is alredy exits
 	_, encontrado, _ := db.CheckExistingUser(t.Email)
 
 	if encontrado {
@@ -35,6 +40,7 @@ func Registro(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//if it doesn't exist yet,create it
 	_, status, err := db.InsertRegistro(t)
 
 	if err != nil {
@@ -47,5 +53,6 @@ func Registro(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//Return a successful 200 code
 	w.WriteHeader(http.StatusCreated)
 }

@@ -25,6 +25,8 @@ func Handlers() {
 	go router.HandleFunc("/verPerfil", middlewares.ChequeoDB(middlewares.ValidJWT(routers.LookProfile))).Methods("GET")
 	//Route for Modify Profile Info
 	go router.HandleFunc("/modificarPerfil", middlewares.ChequeoDB(middlewares.ValidJWT(routers.ModifyProfile))).Methods("PUT")
+	//Route for Create a Tweet
+	go router.HandleFunc("/tweet", middlewares.ChequeoDB(middlewares.ValidJWT(routers.SaveTwitter))).Methods("POST")
 
 	PORT := os.Getenv("PORT")
 

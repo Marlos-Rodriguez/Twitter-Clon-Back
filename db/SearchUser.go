@@ -30,15 +30,15 @@ func SearchUser(ID string) (models.Usuario, error) {
 	}
 
 	//Find a user in the DB
-	err := col.FindOne(ctx, condition).Decode(&perfil)
-
-	//Make empty the password
-	perfil.Password = ""
-
-	if err != nil {
+	if err := col.FindOne(ctx, condition).Decode(&perfil); err != nil {
+		//Make empty the password
+		perfil.Password = ""
 		log.Println("Registro no encontrado" + err.Error())
 		return perfil, err
 	}
+
+	//Make empty the password
+	perfil.Password = ""
 
 	return perfil, nil
 }

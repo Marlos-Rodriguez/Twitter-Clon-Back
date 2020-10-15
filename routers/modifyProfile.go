@@ -14,9 +14,7 @@ func ModifyProfile(w http.ResponseWriter, r *http.Request) {
 	var t models.Usuario
 
 	//Decode the body
-	err := json.NewDecoder(r.Body).Decode(&t)
-
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&t); err != nil {
 		http.Error(w, "Datos Incorrectos"+err.Error(), 400)
 		return
 	}
@@ -24,7 +22,7 @@ func ModifyProfile(w http.ResponseWriter, r *http.Request) {
 	var status bool
 
 	//Try to modify the profile in DB
-	status, err = db.ModifyProfile(t, IDUsuario)
+	status, err := db.ModifyProfile(t, IDUsuario)
 
 	if err != nil {
 		http.Error(w, "Ocurrio un error al intentar modificar el Perfil "+err.Error(), 400)

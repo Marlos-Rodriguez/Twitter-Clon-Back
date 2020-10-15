@@ -14,11 +14,7 @@ func Registro(w http.ResponseWriter, r *http.Request) {
 	var t models.Usuario
 
 	//Decode the body
-	err := json.NewDecoder(r.Body).Decode(&t)
-
-	//Verify if the info is correct
-
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&t); err != nil {
 		http.Error(w, "Error en los datos recibidos"+err.Error(), 400)
 		return
 	}
@@ -27,7 +23,7 @@ func Registro(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "El Email es obligatorio", 400)
 		return
 	}
-	if len(t.Email) < 6 {
+	if len(t.Password) < 6 {
 		http.Error(w, "Contraseña debe tener 6 o mas caracteres", 400)
 		return
 	}

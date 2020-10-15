@@ -67,7 +67,7 @@ func ModifyProfile(u models.Usuario, ID string) (bool, error) {
 		return false, err
 	}
 
-	cntxt.Cancel()
+	defer cntxt.Cancel()
 
 	return true, nil
 }

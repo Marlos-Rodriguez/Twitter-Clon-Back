@@ -21,14 +21,12 @@ func CheckExistingUser(email string) (models.Usuario, bool, string) {
 	cntxt := <-c
 
 	//Searh for a user with same email
-	err := cntxt.Col.FindOne(cntxt.Ctx, condition).Decode(&resultado)
+	if err := cntxt.Col.FindOne(cntxt.Ctx, condition).Decode(&resultado); err != nil {
+		return resultado, false, ""
+	}
 	ID := resultado.ID.Hex()
 
 	defer cntxt.Cancel()
-
-	if err != nil {
-		return resultado, false, ID
-	}
 
 	return resultado, true, ID
 }

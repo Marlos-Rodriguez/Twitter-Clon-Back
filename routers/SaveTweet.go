@@ -15,9 +15,7 @@ func SaveTwitter(w http.ResponseWriter, r *http.Request) {
 	var message models.Tweet
 
 	//Decode the body for the Tweet
-	err := json.NewDecoder(r.Body).Decode(&message)
-
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
 		http.Error(w, "Error en los datos recibidos"+err.Error(), 400)
 		return
 	}

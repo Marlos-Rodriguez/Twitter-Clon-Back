@@ -1,8 +1,7 @@
 package routers
 
 import (
-	"encoding/json"
-	"net/http"
+	"github.com/gofiber/fiber/v2"
 
 	"github.com/Marlos-Rodriguez/Twitter-Clon-Back/db"
 	"github.com/Marlos-Rodriguez/Twitter-Clon-Back/jwt"
@@ -10,23 +9,19 @@ import (
 )
 
 //Login realiza el login
-func Login(w http.ResponseWriter, r *http.Request) {
-	//Write the header for a JSON response
-	w.Header().Add("content-type", "application/json")
+func Login(c *fiber.Ctx) error {
 
 	//Create base User model
 	var t models.Usuario
 
 	//Decode the body of request
-	if err := json.NewDecoder(r.Body).Decode(&t); err != nil {
-		http.Error(w, "Usuario y/o contraseña invalidos"+err.Error(), 400)
-		return
+	if err := c.BodyParser(&t); err != nil {
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "Review your input", "data": err.Error()})
 	}
 
 	//If the email of the body is Empty
 	if len(t.Email) == 0 {
-		http.Error(w, "El email es obligatorio", 400)
-		return
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Email is required"})
 	}
 
 	//Try the login in the DB
@@ -34,25 +29,19 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	//If user not exist
 	if !exist {
-		http.Error(w, "Usuario y/o contraseña invalidos", 400)
-		return
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "User Not exits"})
 	}
 
 	//Generate a JWT
 	jwtKey, err := jwt.GenerateJWT(documento)
 
 	if err != nil {
-		http.Error(w, "Ocurrio un error al generar el token"+err.Error(), 400)
-		return
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Error in generate the token", "data": err})
 	}
 
-	resp := models.ResponseLogin{
-		Token: jwtKey,
-	}
-
-	//Response with the JWT in JSON
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(resp)
-
+	//Return the JWT
+	return c.JSON(&fiber.Map{
+		"success": true,
+		"Token":   jwtKey,
+	})
 }

@@ -1,44 +1,45 @@
 package routers
 
 import (
-	"encoding/json"
-	"net/http"
 	"strconv"
+
+	"github.com/gofiber/fiber/v2"
 
 	"github.com/Marlos-Rodriguez/Twitter-Clon-Back/db"
 )
 
 //ReadTweet Read the tweets
-func ReadTweet(w http.ResponseWriter, r *http.Request) {
-	ID := r.URL.Query().Get("id")
+func ReadTweet(c *fiber.Ctx) error {
+	//Get The ID
+	ID := c.Query("id")
 
+	//Check the query values
 	if len(ID) < 1 {
-		http.Error(w, "Debe enviar el paremetro id", http.StatusBadRequest)
-		return
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "ID is required"})
 	}
 
-	if len(r.URL.Query().Get("pagina")) < 1 {
-		http.Error(w, "Debe enviar el paremetro pagina", http.StatusBadRequest)
-		return
+	if len(c.Query("page")) < 1 {
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "Page param is required"})
 	}
 
-	pagina, err := strconv.Atoi(r.URL.Query().Get("pagina"))
+	//Converto to int
+	pagina, err := strconv.Atoi(c.Query("page"))
 
 	if err != nil {
-		http.Error(w, "Pagina debe ser mayor a 0", http.StatusBadRequest)
-		return
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "Page bust be greater than 0", "data": err})
 	}
 
+	//Convert to int64
 	pag := int64(pagina)
 
-	repuesta, correcto := db.ReadTweets(ID, pag)
+	//Get the tweets from the DB
+	response, isFine := db.ReadTweets(ID, pag)
 
-	if correcto == false {
-		http.Error(w, "Error al leer los Tweets", http.StatusBadRequest)
-		return
+	if isFine == false {
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "Error Reading the tweets"})
+
 	}
 
-	w.Header().Set("Content-type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(repuesta)
+	//Return the tweets
+	return c.JSON(response)
 }

@@ -33,7 +33,7 @@ func SearchUser(ID string) (models.Usuario, error) {
 	if err := col.FindOne(ctx, condition).Decode(&perfil); err != nil {
 		//Make empty the password
 		perfil.Password = ""
-		log.Println("Registro no encontrado" + err.Error())
+		log.Println("Registro no encontrado " + err.Error())
 		return perfil, err
 	}
 

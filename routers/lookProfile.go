@@ -1,33 +1,27 @@
 package routers
 
 import (
-	"encoding/json"
-	"net/http"
-
 	"github.com/Marlos-Rodriguez/Twitter-Clon-Back/db"
+	"github.com/gofiber/fiber/v2"
 )
 
 //LookProfile permite extraer los valores del perfil
-func LookProfile(w http.ResponseWriter, r *http.Request) {
+func LookProfile(c *fiber.Ctx) error {
 
 	//Get the id from the URL
-	ID := r.URL.Query().Get("id")
+	ID := c.Query("id")
 
 	//If the ID is too short
 	if len(ID) < 1 {
-		http.Error(w, "Debe enviar el parametro ID", http.StatusBadRequest)
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "ID is required"})
 	}
 
 	//Search the user in the DB
 	perfil, err := db.SearchUser(ID)
 
 	if err != nil {
-		http.Error(w, "Ocurrio un error al buscar el registro "+err.Error(), 400)
-		return
+		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "No user found with ID", "data": err})
 	}
 
-	//Response with the User Info i JSON
-	w.Header().Set("content-type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(perfil)
+	return c.JSON(perfil)
 }

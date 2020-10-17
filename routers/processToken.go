@@ -2,62 +2,35 @@ package routers
 
 import (
 	"errors"
-	"os"
-	"strings"
 
 	"github.com/Marlos-Rodriguez/Twitter-Clon-Back/db"
-	"github.com/Marlos-Rodriguez/Twitter-Clon-Back/models"
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-//Email valor de email usado en todos los EndPoints
-var Email string
-
-//IDUsuario valor de ID devuelto del modelo, usado en todos los EndPoints
-var IDUsuario string
-
 //ProcessToken proceso token para extraer sus valores
-func ProcessToken(tk string) (*models.Claim, bool, string, error) {
-	//Get the secret key from ENV
-	secrectENV := os.Getenv("SECRECT_KEY")
+func ProcessToken(tk *jwt.Token, UserID string) (string, error) {
 
-	//Convert to bytes
-	myPass := []byte(secrectENV)
+	//Assing the claims in a variable
+	claims := tk.Claims.(jwt.MapClaims)
 
-	claims := &models.Claim{}
-
-	//Separate Bearer of the token
-	splitToken := strings.Split(tk, "Bearer")
-
-	//If the token not a two map object
-	if len(splitToken) != 2 {
-		return claims, false, string(""), errors.New("Formato de token invalido")
-	}
-
-	//Eliminates empty spaces of token
-	tk = strings.TrimSpace(splitToken[1])
-
-	//Decrypt the token with the password
-	tkn, err := jwt.ParseWithClaims(tk, claims, func(token *jwt.Token) (interface{}, error) {
-		return myPass, nil
-	})
-
-	//If everything was fine with the token
-	if err == nil {
-		//Search the user with the info from the token
-		_, encontrado, _ := db.CheckExistingUser(claims.Email)
-		//Assing the info to the claim
-		if encontrado {
-			Email = claims.Email
-			IDUsuario = claims.ID.Hex()
+	//If UserID it's not empty, verify if the same of JWT
+	if UserID != "" && len(UserID) > 1 {
+		if claims["_id"].(string) != UserID {
+			return "", errors.New("Token ID not match")
 		}
-
-		return claims, encontrado, IDUsuario, nil
+	} else {
+		UserID = claims["_id"].(string) //If User If UserID it's empty, assing the ID'claims
 	}
 
-	if !tkn.Valid {
-		return claims, false, string(""), errors.New("token invalido")
+	//Get the email from the claims
+	userEmail := claims["email"].(string)
+
+	//Check if the user Exists in the DB
+	_, found, _ := db.CheckExistingUser(userEmail)
+
+	if !found {
+		return "", errors.New("User not found with that ID")
 	}
 
-	return claims, false, string(""), err
+	return UserID, nil
 }

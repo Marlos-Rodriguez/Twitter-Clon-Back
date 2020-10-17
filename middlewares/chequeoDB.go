@@ -1,18 +1,20 @@
 package middlewares
 
 import (
-	"net/http"
+	"github.com/gofiber/fiber/v2"
 
 	"github.com/Marlos-Rodriguez/Twitter-Clon-Back/db"
 )
 
 //ChequeoDB Middleware que comprueba la conexion de la DB
-func ChequeoDB(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func ChequeoDB() fiber.Handler {
+	return func(c *fiber.Ctx) error {
 		if !db.CheckConnection() {
-			http.Error(w, "Conexion perdida con la base de datos", 500)
-			return
+			return c.Status(500).JSON(&fiber.Map{
+				"success": false,
+				"error":   "Error Connect in the DB",
+			})
 		}
-		next.ServeHTTP(w, r)
+		return c.Next()
 	}
 }

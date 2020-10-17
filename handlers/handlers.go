@@ -2,11 +2,10 @@ package handlers
 
 import (
 	"log"
-	"net/http"
 	"os"
 
-	"github.com/gorilla/mux"
-	"github.com/rs/cors"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 
 	"github.com/Marlos-Rodriguez/Twitter-Clon-Back/middlewares"
 	"github.com/Marlos-Rodriguez/Twitter-Clon-Back/routers"
@@ -15,30 +14,32 @@ import (
 //Handlers seteo mi puerto, el handler y empiezo el servidor
 func Handlers() {
 	//Crear Router
-	router := mux.NewRouter()
+	app := fiber.New()
+
+	//Use the cors
+	app.Use(cors.New())
 
 	//Route of Register
-	go router.HandleFunc("/registro", middlewares.ChequeoDB(routers.Registro)).Methods("POST")
+	app.Post("/registro", middlewares.ChequeoDB(), routers.Registro)
 	//Route of Login
-	go router.HandleFunc("/login", middlewares.ChequeoDB(routers.Login)).Methods("POST")
+	app.Post("/login", middlewares.ChequeoDB(), routers.Login)
 	//Route for See info profile
-	go router.HandleFunc("/verPerfil", middlewares.ChequeoDB(middlewares.ValidJWT(routers.LookProfile))).Methods("GET")
+	app.Get("/profile", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.LookProfile)
 	//Route for Modify Profile Info
-	go router.HandleFunc("/modificarPerfil", middlewares.ChequeoDB(middlewares.ValidJWT(routers.ModifyProfile))).Methods("PUT")
+	app.Put("/modifyProfile", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.ModifyProfile)
 	//Route for Create a Tweet
-	go router.HandleFunc("/tweet", middlewares.ChequeoDB(middlewares.ValidJWT(routers.SaveTwitter))).Methods("POST")
+	app.Post("/tweet", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.SaveTwitter)
 	//Route for read tweet of one User
-	go router.HandleFunc("/leoTweet", middlewares.ChequeoDB(middlewares.ValidJWT(routers.ReadTweet))).Methods("GET")
+	app.Get("/readTweet", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.ReadTweet)
 
+	//Get the Port from ENV
 	PORT := os.Getenv("PORT")
 
 	if PORT == "" {
-		PORT = "8080"
+		PORT = "3000"
 	}
-
-	handler := cors.AllowAll().Handler(router)
 
 	log.Println("Server running in Port: " + PORT)
 
-	log.Fatal(http.ListenAndServe(":"+PORT, handler))
+	log.Fatal(app.Listen(":" + PORT))
 }

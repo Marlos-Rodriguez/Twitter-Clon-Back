@@ -1,54 +1,48 @@
 package routers
 
 import (
-	"encoding/json"
-	"net/http"
+	"github.com/gofiber/fiber/v2"
 
 	"github.com/Marlos-Rodriguez/Twitter-Clon-Back/db"
 	"github.com/Marlos-Rodriguez/Twitter-Clon-Back/models"
 )
 
 //Registro funcion para crear nuevo usuario en DB
-func Registro(w http.ResponseWriter, r *http.Request) {
+func Registro(c *fiber.Ctx) error {
 	//Create a base User model
 	var t models.Usuario
 
-	//Decode the body
-	if err := json.NewDecoder(r.Body).Decode(&t); err != nil {
-		http.Error(w, "Error en los datos recibidos"+err.Error(), 400)
-		return
+	//Decode the body of request
+	if err := c.BodyParser(&t); err != nil {
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "Review your input", "data": err})
 	}
 
 	if len(t.Email) == 0 {
-		http.Error(w, "El Email es obligatorio", 400)
-		return
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "Email is required"})
+
 	}
 	if len(t.Password) < 6 {
-		http.Error(w, "Contraseña debe tener 6 o mas caracteres", 400)
-		return
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "Password bust be greater than 0"})
 	}
 
 	//Search if the user is alredy exits
 	_, encontrado, _ := db.CheckExistingUser(t.Email)
 
 	if encontrado {
-		http.Error(w, "Usuario ya existente con ese email", 400)
-		return
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "User already exists"})
 	}
 
 	//if it doesn't exist yet,create it
 	_, status, err := db.InsertRegistro(t)
 
 	if err != nil {
-		http.Error(w, "Ocurrio un Error al realizar el registro de usuario"+err.Error(), 400)
-		return
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "Error creating the user in the DB", "data": err})
 	}
 
 	if status == false {
-		http.Error(w, "No se inserto el nuevo usuario", 400)
-		return
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "The User is not inserted", "data": err})
 	}
 
-	//Return a successful 200 code
-	w.WriteHeader(http.StatusCreated)
+	//Return a 200 code if everything is fine
+	return c.Status(200).JSON(fiber.Map{"status": "successful", "message": "Modified profile"})
 }

@@ -36,7 +36,7 @@ func Login(c *fiber.Ctx) error {
 	jwtKey, err := jwt.GenerateJWT(documento)
 
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Error in generate the token", "data": err})
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Error in generate the token", "data": err.Error()})
 	}
 
 	//Return the JWT

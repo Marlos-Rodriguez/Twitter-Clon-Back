@@ -26,7 +26,7 @@ func ReadTweet(c *fiber.Ctx) error {
 	pagina, err := strconv.Atoi(c.Query("page"))
 
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "Page bust be greater than 0", "data": err})
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "Page bust be greater than 0", "data": err.Error()})
 	}
 
 	//Convert to int64

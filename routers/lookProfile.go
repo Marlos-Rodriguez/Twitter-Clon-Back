@@ -20,7 +20,7 @@ func LookProfile(c *fiber.Ctx) error {
 	perfil, err := db.SearchUser(ID)
 
 	if err != nil {
-		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "No user found with ID", "data": err})
+		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "No user found with ID", "data": err.Error()})
 	}
 
 	return c.JSON(perfil)

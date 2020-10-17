@@ -14,7 +14,7 @@ func Registro(c *fiber.Ctx) error {
 
 	//Decode the body of request
 	if err := c.BodyParser(&t); err != nil {
-		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "Review your input", "data": err})
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "Review your input", "data": err.Error()})
 	}
 
 	if len(t.Email) == 0 {
@@ -36,11 +36,11 @@ func Registro(c *fiber.Ctx) error {
 	_, status, err := db.InsertRegistro(t)
 
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "Error creating the user in the DB", "data": err})
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "Error creating the user in the DB", "data": err.Error()})
 	}
 
 	if status == false {
-		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "The User is not inserted", "data": err})
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "The User is not inserted", "data": err.Error()})
 	}
 
 	//Return a 200 code if everything is fine

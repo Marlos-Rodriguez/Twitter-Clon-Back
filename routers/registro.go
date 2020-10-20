@@ -44,5 +44,5 @@ func Registro(c *fiber.Ctx) error {
 	}
 
 	//Return a 200 code if everything is fine
-	return c.Status(200).JSON(fiber.Map{"status": "successful", "message": "Modified profile"})
+	return c.SendStatus(200)
 }

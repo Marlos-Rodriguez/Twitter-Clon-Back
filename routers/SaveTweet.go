@@ -24,15 +24,13 @@ func SaveTwitter(c *fiber.Ctx) error {
 	tk := c.Locals("user").(*jwt.Token)
 
 	//If User exists, verify if ID mach or return the id from the Claims
-	IDUser, err := ProcessToken(tk, "")
-
-	if err != nil {
+	if err := ProcessToken(tk, ""); err != nil {
 		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "Error proccesing the token", "data": err.Error()})
 	}
 
 	//Create the complete tweet model
 	register := models.SaveTweet{
-		UserID:  IDUser,
+		UserID:  UserID,
 		Message: message.Message,
 		Date:    time.Now(),
 	}
@@ -49,5 +47,5 @@ func SaveTwitter(c *fiber.Ctx) error {
 	}
 
 	//Return a 200 code if everything is fine
-	return c.Status(200).JSON(fiber.Map{"status": "successful", "message": "Tweet Created"})
+	return c.SendStatus(200)
 }

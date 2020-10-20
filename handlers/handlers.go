@@ -19,18 +19,23 @@ func Handlers() {
 	//Use the cors
 	app.Use(cors.New())
 
-	//Route of Register
+	//User Routes
 	app.Post("/registro", middlewares.ChequeoDB(), routers.Registro)
-	//Route of Login
 	app.Post("/login", middlewares.ChequeoDB(), routers.Login)
-	//Route for See info profile
 	app.Get("/profile", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.LookProfile)
-	//Route for Modify Profile Info
 	app.Put("/modifyProfile", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.ModifyProfile)
-	//Route for Create a Tweet
+
+	//Tweets Route
 	app.Post("/tweet", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.SaveTwitter)
-	//Route for read tweet of one User
 	app.Get("/readTweet", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.ReadTweet)
+	app.Delete("/deleteTweet", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.DeleteTweet)
+
+	//Images Route
+	app.Post("/uploadAvatar", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.UploadAvatar)
+	app.Post("/uploadBanner", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.UploadBanner)
+
+	//Static Images
+	app.Static("/uploads/", "./uploads")
 
 	//Get the Port from ENV
 	PORT := os.Getenv("PORT")

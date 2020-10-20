@@ -25,15 +25,12 @@ func ModifyProfile(c *fiber.Ctx) error {
 	tk := c.Locals("user").(*jwt.Token)
 
 	//Verify if user exits, And is the same ID or get the UserID from the Token
-	IDUser, err := ProcessToken(tk, "")
-
-	//If any error in the token
-	if err != nil {
+	if err := ProcessToken(tk, ""); err != nil {
 		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "Error proccesing the token", "data": err.Error()})
 	}
 
 	//Try to modify the profile in DB
-	status, err = db.ModifyProfile(t, IDUser)
+	status, err := db.ModifyProfile(t, UserID)
 
 	//If errors in the DB
 	if err != nil {
@@ -46,5 +43,5 @@ func ModifyProfile(c *fiber.Ctx) error {
 	}
 
 	//Return a 200 code if everything is fine
-	return c.Status(fiber.StatusAccepted).JSON(fiber.Map{"status": "successful", "message": "Modified profile"})
+	return c.SendStatus(fiber.StatusAccepted)
 }

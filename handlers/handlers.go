@@ -25,6 +25,9 @@ func Handlers() {
 	app.Get("/profile", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.LookProfile)
 	app.Put("/modifyProfile", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.ModifyProfile)
 
+	//Relation Routes
+	app.Post("/createRelation", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.SaveRelation)
+
 	//Tweets Route
 	app.Post("/tweet", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.SaveTwitter)
 	app.Get("/readTweet", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.ReadTweet)

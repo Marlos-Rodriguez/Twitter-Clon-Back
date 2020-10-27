@@ -27,6 +27,9 @@ func Handlers() {
 
 	//Relation Routes
 	app.Post("/createRelation", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.SaveRelation)
+	app.Delete("/deleteRelation", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.DeleteRelation)
+	app.Get("/requestRelation", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.RequestRelation)
+	app.Get("/listUsers", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.ListUsers)
 
 	//Tweets Route
 	app.Post("/tweet", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.SaveTwitter)

@@ -28,7 +28,7 @@ func ListUsers(c *fiber.Ctx) error {
 	tk := c.Locals("user").(*jwt.Token)
 
 	//Verify if user exits, And is the same ID or get the UserID from the Token
-	if err := ProcessToken(tk, ""); err != nil {
+	if err := ProcessToken(tk); err != nil {
 		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "Error proccesing the token", "data": err.Error()})
 	}
 

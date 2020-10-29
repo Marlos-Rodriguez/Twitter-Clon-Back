@@ -20,7 +20,7 @@ func DeleteRelation(c *fiber.Ctx) error {
 
 	tk := c.Locals("user").(*jwt.Token)
 
-	if err := ProcessToken(tk, ""); err != nil {
+	if err := ProcessToken(tk); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Error processing token", "data": err.Error()})
 	}
 

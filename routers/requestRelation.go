@@ -22,7 +22,7 @@ func RequestRelation(c *fiber.Ctx) error {
 
 	tk := c.Locals("user").(*jwt.Token)
 
-	if err := ProcessToken(tk, ""); err != nil {
+	if err := ProcessToken(tk); err != nil {
 		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "Error proccesing the token", "data": err.Error()})
 	}
 

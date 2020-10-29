@@ -61,6 +61,6 @@ func loadEnv() {
 	err := godotenv.Load()
 
 	if err != nil {
-		log.Fatal("Error loading ENV")
+		log.Fatal("Error loading ENV: " + err.Error())
 	}
 }

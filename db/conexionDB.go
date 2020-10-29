@@ -5,7 +5,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/joho/godotenv"
+	//Autoload the env
+	_ "github.com/joho/godotenv/autoload"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -15,8 +16,6 @@ var MongoCN = ConectarDB()
 
 /*ConectarDB funcion que se conecta a la base de datos */
 func ConectarDB() *mongo.Client {
-	//Funtion to load ENV
-	loadEnv()
 
 	//Get MongoDB URL
 	dbURL := os.Getenv("DATABASE_URL")
@@ -54,13 +53,4 @@ func CheckConnection() bool {
 	}
 
 	return true
-}
-
-//Load the ENV
-func loadEnv() {
-	err := godotenv.Load()
-
-	if err != nil {
-		log.Fatal("Error loading ENV: " + err.Error())
-	}
 }

@@ -35,6 +35,7 @@ func Handlers() {
 	app.Post("/tweet", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.SaveTwitter)
 	app.Get("/readTweet", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.ReadTweet)
 	app.Delete("/deleteTweet", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.DeleteTweet)
+	app.Get("/mainTweets", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.ReadMainTweets)
 
 	//Images Route
 	app.Post("/uploadAvatar", middlewares.ChequeoDB(), middlewares.ValidJWT(), routers.UploadAvatar)
